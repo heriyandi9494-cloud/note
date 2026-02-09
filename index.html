@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -182,14 +183,24 @@ firebase.database().ref("saldo").on("value", snap => {
     hitungSaldo();
 });
 function simpanSaldo() {
-    const saldoAwal = parseInt(document.getElementById("saldoAwalInput").value);
+    const inputSaldo = parseInt(
+        document.getElementById("saldoAwalInput").value
+    );
 
-    if (isNaN(saldoAwal)) {
+    if (isNaN(inputSaldo) || inputSaldo <= 0) {
         alert("Masukkan saldo yang valid");
         return;
     }
 
-    firebase.database().ref("saldo").set(saldoAwal);
+    const saldoRef = firebase.database().ref("saldo");
+
+    saldoRef.once("value").then(snapshot => {
+        const saldoLama = snapshot.val() || 0;
+        const saldoBaru = saldoLama + inputSaldo;
+
+        saldoRef.set(saldoBaru);
+        document.getElementById("saldoAwalInput").value = "";
+    });
 }
 function filterTanggal() {
     const tanggal = document.getElementById("filterTanggal").value;
